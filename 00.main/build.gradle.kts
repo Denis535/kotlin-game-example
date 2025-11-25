@@ -59,3 +59,8 @@ publishing {
         }
     }
 }
+
+tasks.register("run", JavaExec::class) {
+    this.classpath = sourceSets["main"].runtimeClasspath
+    this.mainClass.set("com.denis535.kotlin_game_example.ProgramKt")
+}
