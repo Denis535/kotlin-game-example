@@ -1,10 +1,10 @@
 plugins {
-//    this.id("org.jetbrains.kotlin.jvm") version "2.2.21"
 }
 
-//kotlin {
-//    this.jvmToolchain(24)
-//    this.compilerOptions {
-//        this.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24
-//    }
-//}
+tasks.register<Copy>("dist") {
+    this.dependsOn(project(":main").tasks.named("jar"))
+    this.into(layout.projectDirectory.dir("dist"))
+    this.from(project(":main").layout.buildDirectory.dir("libs")) {
+        this.include("*.jar")
+    }
+}

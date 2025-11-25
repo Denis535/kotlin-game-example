@@ -19,6 +19,15 @@ dependencies {
     this.testImplementation(this.kotlin("test"))
 }
 
+tasks.jar {
+    this.archiveBaseName = rootProject.name
+    this.archiveVersion = ""
+    this.archiveClassifier = ""
+    this.manifest {
+        this.attributes["Main-Class"] = "com.denis535.kotlin_game_example.ProgramKt"
+    }
+}
+
 tasks.register("run", JavaExec::class) {
     this.classpath = sourceSets["main"].runtimeClasspath
     this.mainClass = "com.denis535.kotlin_game_example.ProgramKt"

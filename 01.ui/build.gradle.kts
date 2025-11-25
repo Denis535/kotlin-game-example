@@ -17,3 +17,9 @@ dependencies {
     this.implementation("io.github.denis535:game-framework-pro-extensions:1.0.0")
     this.testImplementation(this.kotlin("test"))
 }
+
+tasks.jar {
+    this.archiveBaseName = rootProject.name + '-' + project.name
+    this.archiveVersion = ""
+    this.archiveClassifier = ""
+}
