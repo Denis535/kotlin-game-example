@@ -48,9 +48,9 @@ public object Window {
 // GLFWAllocator.Buffer        - An array of GLFWAllocator structs.
 
 // Data/Monitor
-// GLFWVidMode                 - struct GLFWvidmode { int width; int height; int redBits; int greenBits; int blueBits; int refreshRate; }
+// GLFWVidMode                 - struct GLFWVidMode { int width; int height; int redBits; int greenBits; int blueBits; int refreshRate; }
 // GLFWVidMode.Buffer          - An array of GLFWVidMode structs.
-// GLFWGammaRamp               - struct GLFWgammaramp { unsigned short * red; unsigned short * green; unsigned short * blue; unsigned int size; }
+// GLFWGammaRamp               - struct GLFWGammaRamp { unsigned short * red; unsigned short * green; unsigned short * blue; unsigned int size; }
 // GLFWGammaRamp.Buffer        - An array of GLFWGammaRamp structs.
 
 // Data/Image
@@ -58,7 +58,7 @@ public object Window {
 // GLFWImage.Buffer            - An array of GLFWImage structs.
 
 // Data/Input
-// GLFWGamepadState            - struct GLFWgamepadstate { unsigned char buttons[15]; float axes[6]; }
+// GLFWGamepadState            - struct GLFWGamepadState { unsigned char buttons[15]; float axes[6]; }
 // GLFWGamepadState.Buffer     - An array of GLFWGamepadState structs.
 
 // Utils
