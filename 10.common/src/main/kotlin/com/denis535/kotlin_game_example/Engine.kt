@@ -29,10 +29,16 @@ public object MainWindow {
             return this.Id != 0L
         }
 
-    public val IsShown: Boolean
+    public val IsVisible: Boolean
         get() {
             check(this.IsCreated)
-            return GLFW.glfwGetWindowAttrib(this.Id, GLFW.GLFW_ICONIFIED) == GLFW.GLFW_FALSE
+            return GLFW.glfwGetWindowAttrib(this.Id, GLFW.GLFW_VISIBLE) == GLFW.GLFW_TRUE
+        }
+
+    public val IsFocused: Boolean
+        get() {
+            check(this.IsCreated)
+            return GLFW.glfwGetWindowAttrib(this.Id, GLFW.GLFW_FOCUSED) == GLFW.GLFW_TRUE
         }
 
     public val Position: Pair<Int, Int>
@@ -147,7 +153,7 @@ public object MainLoop {
             GLFW.glfwPollEvents().also { GLFW2.ThrowErrorIfNeeded() }
 //            if (GLFW.glfwGetKey(Engine.Window, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS || GLFW.glfwGetKey(Engine.Window, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
 //                if (GLFW.glfwGetKey(Engine.Window, GLFW.GLFW_KEY_ENTER) == GLFW.GLFW_PRESS) {
-//                    Engine.SetIsWindowFullscreen(!Engine.IsWindowFullscreen)
+//                    MainWindow.SetIsWindowFullscreen(!Engine.IsWindowFullscreen)
 //                }
 //            }
             // Update()
