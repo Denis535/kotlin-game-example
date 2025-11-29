@@ -2,23 +2,6 @@ package com.denis535.kotlin_game_example
 
 import org.lwjgl.glfw.GLFW
 
-public object Engine {
-
-    public val Time: Double
-        get() {
-            return GLFW.glfwGetTime().also { GLFW2.ThrowErrorIfNeeded() }
-        }
-
-    public fun Initialize() {
-        GLFW.glfwInit().also { GLFW2.ThrowErrorIfNeeded() }
-    }
-
-    public fun Deinitialize() {
-        GLFW.glfwTerminate()
-    }
-
-}
-
 public object MainWindow {
 
     internal var Id: Long = 0
@@ -88,7 +71,7 @@ public object MainWindow {
 
     public fun Create(title: String, width: Int = 1280, height: Int = 720) {
         check(!this.IsCreated)
-        check(!MainLoop.IsRunning)
+        GLFW.glfwInit().also { GLFW2.ThrowErrorIfNeeded() }
         val monitor = GLFW.glfwGetPrimaryMonitor().also { GLFW2.ThrowErrorIfNeeded() }
         val videoMode = GLFW.glfwGetVideoMode(monitor)!!.also { GLFW2.ThrowErrorIfNeeded() }
         GLFW.glfwDefaultWindowHints().also { GLFW2.ThrowErrorIfNeeded() }
@@ -110,8 +93,8 @@ public object MainWindow {
 
     public fun Destroy() {
         check(this.IsCreated)
-        check(!MainLoop.IsRunning)
         GLFW.glfwDestroyWindow(this.Id).also { GLFW2.ThrowErrorIfNeeded() }
+        GLFW.glfwTerminate()
         this.Id = 0L
     }
 
@@ -130,7 +113,7 @@ public object MainWindow {
 
 }
 
-public object MainLoop {
+public object Engine {
 
     public var IsRunning: Boolean = false
         get() {
@@ -139,6 +122,12 @@ public object MainLoop {
         private set(value) {
             check(MainWindow.IsCreated)
             field = value
+        }
+
+    public val Time: Double
+        get() {
+            check(MainWindow.IsCreated)
+            return GLFW.glfwGetTime().also { GLFW2.ThrowErrorIfNeeded() }
         }
 
     public var NumberOfFrame: Int = 0
