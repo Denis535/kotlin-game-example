@@ -1,17 +1,7 @@
 package com.denis535.kotlin_game_example
 
-import org.lwjgl.glfw.*
-
-public object Window {
-
-    public fun Create() {
-    }
-
-    public fun Destroy() {
-
-    }
-
-}
+import org.lwjgl.glfw.GLFW
+import org.lwjgl.system.MemoryUtil
 
 // Api
 // GLFW
@@ -137,3 +127,28 @@ public object Window {
 // Callback/Error
 // GLFWErrorCallback
 // GLFWErrorCallbackI
+
+internal object GLFW2 {
+
+    private val PointerBuffer = MemoryUtil.memAllocPointer(1)
+
+    public fun ThrowErrorIfNeeded() {
+        val (error, desc) = this.GetError()
+        if (error != 0) {
+            val message = if (desc != null) {
+                "GLFW Error: $error, $desc"
+            } else {
+                "GLFW Error: $error"
+            }
+            error(message)
+        }
+    }
+
+    private fun GetError(): Pair<Int, String?> {
+        val error = GLFW.glfwGetError(this.PointerBuffer)
+        val pointer = this.PointerBuffer[0]
+        val description = if (pointer != 0L) MemoryUtil.memUTF8(pointer) else null
+        return Pair(error, description)
+    }
+
+}
