@@ -20,11 +20,9 @@ public object Engine {
         this.Window = run {
             val monitor = GLFW.glfwGetPrimaryMonitor().also { GLFW2.ThrowErrorIfNeeded() }
             val videoMode = GLFW.glfwGetVideoMode(monitor)!!.also { GLFW2.ThrowErrorIfNeeded() }
-            val posX = (videoMode.width() - width) / 2
-            val posY = (videoMode.height() - height) / 2
             GLFW.glfwDefaultWindowHints().also { GLFW2.ThrowErrorIfNeeded() }
-            GLFW.glfwWindowHint(GLFW.GLFW_POSITION_X, posX)
-            GLFW.glfwWindowHint(GLFW.GLFW_POSITION_Y, posY)
+            GLFW.glfwWindowHint(GLFW.GLFW_POSITION_X, (videoMode.width() - width) / 2)
+            GLFW.glfwWindowHint(GLFW.GLFW_POSITION_Y, (videoMode.height() - height) / 2)
             GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_CREATION_API, GLFW.GLFW_NATIVE_CONTEXT_API)
             GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 4)
             GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 6)
