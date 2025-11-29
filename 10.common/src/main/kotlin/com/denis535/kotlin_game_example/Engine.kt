@@ -4,52 +4,8 @@ import org.lwjgl.glfw.GLFW
 
 public object Engine {
 
-    internal var Window: Long = 0
-        private set
-
-    public val IsWindowCreated: Boolean
-        get() {
-            return this.Window != 0L
-        }
-
-    public var IsWindowFullscreen: Boolean
-        get() {
-            check(this.IsWindowCreated)
-            val monitor = GLFW.glfwGetWindowMonitor(this.Window).also { GLFW2.ThrowErrorIfNeeded() }
-            return monitor != 0L
-        }
-        set(value) {
-            check(this.IsWindowCreated)
-            val monitor = GLFW.glfwGetPrimaryMonitor().also { GLFW2.ThrowErrorIfNeeded() }
-            val videoMode = GLFW.glfwGetVideoMode(monitor)!!.also { GLFW2.ThrowErrorIfNeeded() }
-            if (value) {
-                GLFW.glfwSetWindowMonitor(this.Window, monitor, 0, 0, videoMode.width(), videoMode.height(), videoMode.refreshRate()).also { GLFW2.ThrowErrorIfNeeded() }
-            } else {
-                GLFW.glfwSetWindowMonitor(this.Window, 0, (videoMode.width() - 1280) / 2, (videoMode.height() - 720) / 2, 1280, 720, 0).also { GLFW2.ThrowErrorIfNeeded() }
-            }
-        }
-
-    public val WindowPosition: Pair<Int, Int>
-        get() {
-            check(this.IsWindowCreated)
-            val posX = IntArray(1)
-            val posY = IntArray(1)
-            GLFW.glfwGetWindowPos(this.Window, posX, posY)
-            return posX[0] to posY[0]
-        }
-
-    public val WindowSize: Pair<Int, Int>
-        get() {
-            check(this.IsWindowCreated)
-            val width = IntArray(1)
-            val height = IntArray(1)
-            GLFW.glfwGetWindowSize(this.Window, width, height)
-            return width[0] to height[0]
-        }
-
     public val Time: Double
         get() {
-            check(this.IsWindowCreated)
             return GLFW.glfwGetTime().also { GLFW2.ThrowErrorIfNeeded() }
         }
 
@@ -61,9 +17,72 @@ public object Engine {
         GLFW.glfwTerminate()
     }
 
-    public fun CreateWindow(title: String, width: Int = 1280, height: Int = 720) {
-        check(!this.IsWindowCreated)
-        this.Window = run {
+}
+
+public object MainWindow {
+
+    internal var Id: Long = 0
+        private set
+
+    public val IsCreated: Boolean
+        get() {
+            return this.Id != 0L
+        }
+
+    public val IsShown: Boolean
+        get() {
+            check(this.IsCreated)
+            return GLFW.glfwGetWindowAttrib(this.Id, GLFW.GLFW_ICONIFIED) == GLFW.GLFW_FALSE
+        }
+
+    public val Position: Pair<Int, Int>
+        get() {
+            check(this.IsCreated)
+            val posX = IntArray(1)
+            val posY = IntArray(1)
+            GLFW.glfwGetWindowPos(this.Id, posX, posY).also { GLFW2.ThrowErrorIfNeeded() }
+            return posX[0] to posY[0]
+        }
+
+    public val Size: Pair<Int, Int>
+        get() {
+            check(this.IsCreated)
+            val width = IntArray(1)
+            val height = IntArray(1)
+            GLFW.glfwGetWindowSize(this.Id, width, height).also { GLFW2.ThrowErrorIfNeeded() }
+            return width[0] to height[0]
+        }
+
+    public var IsFullscreen: Boolean
+        get() {
+            check(this.IsCreated)
+            val monitor = GLFW.glfwGetWindowMonitor(this.Id).also { GLFW2.ThrowErrorIfNeeded() }
+            return monitor != 0L
+        }
+        set(value) {
+            check(this.IsCreated)
+            val monitor = GLFW.glfwGetPrimaryMonitor().also { GLFW2.ThrowErrorIfNeeded() }
+            val videoMode = GLFW.glfwGetVideoMode(monitor)!!.also { GLFW2.ThrowErrorIfNeeded() }
+            if (value) {
+                GLFW.glfwSetWindowMonitor(this.Id, monitor, 0, 0, videoMode.width(), videoMode.height(), videoMode.refreshRate()).also { GLFW2.ThrowErrorIfNeeded() }
+            } else {
+                GLFW.glfwSetWindowMonitor(this.Id, 0, (videoMode.width() - 1280) / 2, (videoMode.height() - 720) / 2, 1280, 720, 0).also { GLFW2.ThrowErrorIfNeeded() }
+            }
+        }
+
+    public var IsClosing: Boolean
+        get() {
+            check(this.IsCreated)
+            return GLFW.glfwWindowShouldClose(this.Id)
+        }
+        set(value) {
+            check(this.IsCreated)
+            GLFW.glfwSetWindowShouldClose(this.Id, true)
+        }
+
+    public fun Create(title: String, width: Int = 1280, height: Int = 720) {
+        check(!this.IsCreated)
+        this.Id = run {
             val monitor = GLFW.glfwGetPrimaryMonitor().also { GLFW2.ThrowErrorIfNeeded() }
             val videoMode = GLFW.glfwGetVideoMode(monitor)!!.also { GLFW2.ThrowErrorIfNeeded() }
             GLFW.glfwDefaultWindowHints().also { GLFW2.ThrowErrorIfNeeded() }
@@ -90,35 +109,41 @@ public object Engine {
         }
     }
 
-    public fun CloseWindow() {
-        check(this.IsWindowCreated)
-        GLFW.glfwSetWindowShouldClose(this.Window, true)
-    }
-
-    public fun DestroyWindow() {
-        check(this.IsWindowCreated)
-        GLFW.glfwDestroyWindow(this.Window).also { GLFW2.ThrowErrorIfNeeded() }
-        this.Window = 0L
+    public fun Destroy() {
+        check(this.IsCreated)
+        GLFW.glfwDestroyWindow(this.Id).also { GLFW2.ThrowErrorIfNeeded() }
+        this.Id = 0L
     }
 
 }
 
 public object MainLoop {
 
-    public var NumberOfFrame: Int = 0
+    public var IsRunning: Boolean = false
         get() {
-            check(Engine.IsWindowCreated)
+            check(MainWindow.IsCreated)
             return field
         }
         private set(value) {
-            check(Engine.IsWindowCreated)
+            check(MainWindow.IsCreated)
+            field = value
+        }
+
+    public var NumberOfFrame: Int = 0
+        get() {
+            check(this.IsRunning)
+            return field
+        }
+        private set(value) {
+            check(this.IsRunning)
             field = value
         }
 
     public fun Run() {
-        check(Engine.IsWindowCreated)
+        check(!this.IsRunning)
+        this.IsRunning = true
         this.NumberOfFrame = 0
-        while (!GLFW.glfwWindowShouldClose(Engine.Window)) {
+        while (!MainWindow.IsClosing) {
             GLFW.glfwPollEvents().also { GLFW2.ThrowErrorIfNeeded() }
 //            if (GLFW.glfwGetKey(Engine.Window, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS || GLFW.glfwGetKey(Engine.Window, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
 //                if (GLFW.glfwGetKey(Engine.Window, GLFW.GLFW_KEY_ENTER) == GLFW.GLFW_PRESS) {
@@ -127,9 +152,10 @@ public object MainLoop {
 //            }
             // Update()
             // Draw()
-            GLFW.glfwSwapBuffers(Engine.Window).also { GLFW2.ThrowErrorIfNeeded() }
+            GLFW.glfwSwapBuffers(MainWindow.Id).also { GLFW2.ThrowErrorIfNeeded() }
             this.NumberOfFrame++
         }
+        this.IsRunning = false
     }
 
 }
