@@ -4,7 +4,7 @@ import org.lwjgl.glfw.GLFW
 
 public class Engine : AutoCloseable {
 
-    private val MainWindow: MainWindow
+    private val Window: MainWindow
 
     public var IsRunning: Boolean = false
         private set(value) {
@@ -49,11 +49,11 @@ public class Engine : AutoCloseable {
         }
 
     public constructor(mainWindow: MainWindow) {
-        this.MainWindow = mainWindow.also { require(!it.IsClosed) }
+        this.Window = mainWindow.also { require(!it.IsClosed) }
     }
 
     public override fun close() {
-        check(!this.MainWindow.IsClosed)
+        check(!this.Window.IsClosed)
         check(!this.IsRunning)
     }
 
@@ -63,8 +63,8 @@ public class Engine : AutoCloseable {
         this.Time = 0.0
         this.DeltaTime = 0.0
         var deltaTimeAccumulator = 0.0
-        while (!this.MainWindow.IsClosingRequested) {
-            val startTime = this.MainWindow.Time
+        while (!this.Window.IsClosingRequested) {
+            val startTime = this.Window.Time
             run {
                 this.OnFrameBegin()
                 while (deltaTimeAccumulator >= this.FixedDeltaTime) {
@@ -75,7 +75,7 @@ public class Engine : AutoCloseable {
                 this.OnDraw()
                 this.OnFrameEnd()
             }
-            val endTime = this.MainWindow.Time
+            val endTime = this.Window.Time
             this.Tick++
             this.Time += endTime - startTime
             this.DeltaTime = endTime - startTime
@@ -93,9 +93,9 @@ public class Engine : AutoCloseable {
     }
 
     private fun OnUpdate() {
-        if (GLFW.glfwGetKey(this.MainWindow.NativeWindowPointer, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS || GLFW.glfwGetKey(this.MainWindow.NativeWindowPointer, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
-            if (GLFW.glfwGetKey(this.MainWindow.NativeWindowPointer, GLFW.GLFW_KEY_ENTER) == GLFW.GLFW_PRESS) {
-                this.MainWindow.IsFullscreen = !this.MainWindow.IsFullscreen
+        if (GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS || GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
+            if (GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_ENTER) == GLFW.GLFW_PRESS) {
+                this.Window.IsFullscreen = !this.Window.IsFullscreen
             }
         }
     }
@@ -105,7 +105,7 @@ public class Engine : AutoCloseable {
     }
 
     private fun OnFrameEnd() {
-        GLFW.glfwSwapBuffers(this.MainWindow.NativeWindowPointer).also { GLFW2.ThrowErrorIfNeeded() }
+        GLFW.glfwSwapBuffers(this.Window.NativeWindowPointer).also { GLFW2.ThrowErrorIfNeeded() }
     }
 
 }
