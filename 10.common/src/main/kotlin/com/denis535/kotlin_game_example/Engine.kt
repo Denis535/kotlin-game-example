@@ -32,26 +32,20 @@ public class Engine : AutoCloseable {
             field = value
         }
 
-    private var PrevTime: Double? = null
+    public var DeltaTime: Double = 0.0
         get() {
             check(this.IsRunning)
             return field
         }
-        set(value) {
+        private set(value) {
             check(this.IsRunning)
             field = value
-        }
-
-    public val DeltaTime: Double
-        get() {
-            check(this.IsRunning)
-            return this.PrevTime?.let { prevTime -> this.Time - prevTime } ?: 0.0
         }
 
     public val FixedDeltaTime: Double
         get() {
             check(this.IsRunning)
-            return 1.0 / 20.0
+            return 1.0 / 25.0
         }
 
     public constructor(mainWindow: MainWindow) {
@@ -67,29 +61,31 @@ public class Engine : AutoCloseable {
         this.IsRunning = true
         this.Tick = 0
         this.Time = 0.0
-        this.PrevTime = null
+        this.DeltaTime = 0.0
+        var deltaTimeAccumulator = 0.0
         while (!this.MainWindow.IsClosingRequested) {
-            this.Time = this.MainWindow.Time
-            this.OnFrame()
+            val startTime = this.MainWindow.Time
+            run {
+                this.OnFrameBegin()
+                while (deltaTimeAccumulator >= this.FixedDeltaTime) {
+                    this.OnFixedUpdate()
+                    deltaTimeAccumulator -= this.FixedDeltaTime
+                }
+                this.OnUpdate()
+                this.OnDraw()
+                this.OnFrameEnd()
+            }
+            val endTime = this.MainWindow.Time
             this.Tick++
-            this.PrevTime = this.Time
+            this.Time += endTime - startTime
+            this.DeltaTime = endTime - startTime
+            deltaTimeAccumulator += this.DeltaTime
         }
         this.IsRunning = false
     }
 
-    private fun OnFrame() {
+    private fun OnFrameBegin() {
         GLFW.glfwPollEvents().also { GLFW2.ThrowErrorIfNeeded() }
-
-//        var accumulator = 0.0
-//        accumulator += deltaTime
-//        while (accumulator >= fixedDeltaTime) {
-//            this.OnFixedUpdate()
-//            accumulator -= fixedDeltaTime
-//        }
-
-        this.OnUpdate()
-        this.OnDraw()
-        GLFW.glfwSwapBuffers(this.MainWindow.NativeWindowPointer).also { GLFW2.ThrowErrorIfNeeded() }
     }
 
     private fun OnFixedUpdate() {
@@ -106,6 +102,10 @@ public class Engine : AutoCloseable {
 
     private fun OnDraw() {
 
+    }
+
+    private fun OnFrameEnd() {
+        GLFW.glfwSwapBuffers(this.MainWindow.NativeWindowPointer).also { GLFW2.ThrowErrorIfNeeded() }
     }
 
 }
