@@ -38,12 +38,12 @@ public class Program : AbstractProgram2<Theme, Screen, Router, Application> {
         super.OnClose()
     }
 
-    private fun OnFixedUpdate(time: Time) {
-        println("OnFixedUpdate: " + time.FixedTime.FrameTime)
+    private fun OnFixedUpdate(frame: Frame) {
+        println("OnFixedUpdate: " + frame.FixedFrame.Time)
     }
 
-    private fun OnUpdate(time: Time) {
-        println("OnUpdate: " + time.RealTime.FrameTime)
+    private fun OnUpdate(frame: Frame) {
+        println("OnUpdate: " + frame.RealFrame.Time)
     }
 
     public override fun GetDependency(clazz: kotlin.reflect.KClass<*>, argument: Any?): Any? {
