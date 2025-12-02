@@ -94,8 +94,7 @@ public class Time {
     public val FixedTime: FixedTime = FixedTime()
     public val RealTime: RealTime = RealTime()
 
-    internal constructor() {
-    }
+    internal constructor()
 
 }
 
@@ -112,8 +111,7 @@ public class FixedTime {
     public var DeltaTime: Double = 0.0
         internal set
 
-    internal constructor() {
-    }
+    internal constructor()
 
     public override fun toString(): String {
         return "FixedTime: $this.FrameNumber, $this.FrameTime"
@@ -132,8 +130,7 @@ public class RealTime {
     public var DeltaTime: Double = 0.0
         internal set
 
-    internal constructor() {
-    }
+    internal constructor()
 
     public override fun toString(): String {
         return "RealTime: $this.FrameNumber, $this.FrameTime"
