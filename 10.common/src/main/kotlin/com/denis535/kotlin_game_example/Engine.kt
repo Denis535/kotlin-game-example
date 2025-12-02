@@ -136,7 +136,7 @@ public class RealTime {
     }
 
     public override fun toString(): String {
-        return "FixedTime: $this.FrameNumber, $this.FrameTime"
+        return "RealTime: $this.FrameNumber, $this.FrameTime"
     }
 
 }
