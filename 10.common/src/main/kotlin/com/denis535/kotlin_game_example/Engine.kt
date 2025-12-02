@@ -6,7 +6,7 @@ public class Engine : AutoCloseable {
 
     private val Window: MainWindow
     private val OnFixedUpdateCallback: ((Frame) -> Unit)
-    private val OnUpdateCallback: ((Frame) -> Unit)
+    private val OnRealUpdateCallback: ((Frame) -> Unit)
 
     public var IsRunning: Boolean = false
         private set(value) {
@@ -24,10 +24,10 @@ public class Engine : AutoCloseable {
             field = value
         }
 
-    public constructor(window: MainWindow, onFixedUpdateCallback: ((Frame) -> Unit), onUpdateCallback: ((Frame) -> Unit)) {
+    public constructor(window: MainWindow, onFixedUpdateCallback: ((Frame) -> Unit), onRealUpdateCallback: ((Frame) -> Unit)) {
         this.Window = window.also { require(!it.IsClosed) }
         this.OnFixedUpdateCallback = onFixedUpdateCallback
-        this.OnUpdateCallback = onUpdateCallback
+        this.OnRealUpdateCallback = onRealUpdateCallback
     }
 
     public override fun close() {
@@ -44,7 +44,7 @@ public class Engine : AutoCloseable {
                 val startTime = this.Window.Time
                 this.OnFrameBegin()
                 this.OnFixedUpdate(frame)
-                this.OnUpdate(frame)
+                this.OnRealUpdate(frame)
                 this.OnFrameEnd()
                 val endTime = this.Window.Time
                 endTime - startTime
@@ -73,13 +73,13 @@ public class Engine : AutoCloseable {
         }
     }
 
-    private fun OnUpdate(frame: Frame) {
+    private fun OnRealUpdate(frame: Frame) {
         if (GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS || GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
             if (GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_ENTER) == GLFW.GLFW_PRESS) {
                 this.Window.IsFullscreen = !this.Window.IsFullscreen
             }
         }
-        this.OnUpdateCallback(frame)
+        this.OnRealUpdateCallback(frame)
         frame.RealFrame.Number++
     }
 
