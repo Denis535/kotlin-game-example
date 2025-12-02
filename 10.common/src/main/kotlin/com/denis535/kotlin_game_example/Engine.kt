@@ -50,7 +50,7 @@ public class Engine : AutoCloseable {
                 endTime - startTime
             }
             this.Fps = 1.0 / deltaTime
-            time.Time += deltaTime
+            time.FrameTime += deltaTime
             time.FixedDeltaTime = fixedDeltaTime
             time.DeltaTime = deltaTime
         }
@@ -62,13 +62,13 @@ public class Engine : AutoCloseable {
     }
 
     private fun OnFixedUpdate(time: Time) {
-        if (time.FixedUpdateNumber == 0) {
+        if (time.FixedFrameNumber == 0) {
             this.OnFixedUpdateCallback(time)
-            time.FixedUpdateNumber++
+            time.FixedFrameNumber++
         } else {
-            while (time.FixedUpdateNumber * time.FixedDeltaTime < time.Time) {
+            while (time.FixedFrameTime <= time.FrameTime) {
                 this.OnFixedUpdateCallback(time)
-                time.FixedUpdateNumber++
+                time.FixedFrameNumber++
             }
         }
     }
@@ -80,7 +80,7 @@ public class Engine : AutoCloseable {
             }
         }
         this.OnUpdateCallback(time)
-        time.UpdateNumber++
+        time.FrameNumber++
     }
 
     private fun OnFrameEnd() {
@@ -91,13 +91,18 @@ public class Engine : AutoCloseable {
 
 public class Time {
 
-    public var FixedUpdateNumber: Int = 0
+    public var FixedFrameNumber: Int = 0
         internal set
 
-    public var UpdateNumber: Int = 0
+    public var FrameNumber: Int = 0
         internal set
 
-    public var Time: Double = 0.0
+    public val FixedFrameTime: Double
+        get() {
+            return this.FixedFrameNumber * this.FixedDeltaTime
+        }
+
+    public var FrameTime: Double = 0.0
         internal set
 
     public var FixedDeltaTime: Double = 0.0
@@ -110,7 +115,7 @@ public class Time {
     }
 
     public override fun toString(): String {
-        return this.Time.toString()
+        return this.FrameTime.toString()
     }
 
 }

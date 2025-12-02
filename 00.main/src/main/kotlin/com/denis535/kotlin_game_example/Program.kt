@@ -1,7 +1,6 @@
 package com.denis535.kotlin_game_example
 
 import com.denis535.game_framework_pro.*
-import com.denis535.kotlin_game_example.*
 
 @JvmName("main")
 fun Main(args: Array<String>) {
@@ -40,11 +39,11 @@ public class Program : AbstractProgram2<Theme, Screen, Router, Application> {
     }
 
     private fun OnFixedUpdate(time: Time) {
-        println("OnFixedUpdate: " + time.Time)
+        println("OnFixedUpdate: " + time.FrameTime)
     }
 
     private fun OnUpdate(time: Time) {
-        println("OnUpdate: " + time.Time)
+        println("OnUpdate: " + time.FrameTime)
     }
 
     public override fun GetDependency(clazz: kotlin.reflect.KClass<*>, argument: Any?): Any? {
