@@ -38,12 +38,12 @@ public class Program : AbstractProgram2<Theme, Screen, Router, Application> {
         super.OnClose()
     }
 
-    private fun OnFixedUpdate(info: FrameInfo) {
-        println("FixedFrameInfo: ${info.FixedFrameInfo.Time} / ${info.Time}")
+    private fun OnFixedUpdate(info: UpdateInfo) {
+        println("OnFixedUpdate: ${info.FixedUpdateInfo.Time} / ${info.Time}")
     }
 
-    private fun OnUpdate(info: FrameInfo) {
-        println("FrameInfo: ${info.Time}")
+    private fun OnUpdate(info: UpdateInfo) {
+        println("OnUpdate: ${info.Time}")
     }
 
     public override fun GetDependencyInternal(clazz: kotlin.reflect.KClass<*>, argument: Any?): Any? {

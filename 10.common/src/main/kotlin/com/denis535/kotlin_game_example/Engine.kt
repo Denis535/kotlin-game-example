@@ -5,8 +5,8 @@ import org.lwjgl.glfw.GLFW
 public class Engine : AutoCloseable {
 
     private val Window: MainWindow
-    private val OnFixedUpdateCallback: ((FrameInfo) -> Unit)
-    private val OnUpdateCallback: ((FrameInfo) -> Unit)
+    private val OnFixedUpdateCallback: ((UpdateInfo) -> Unit)
+    private val OnUpdateCallback: ((UpdateInfo) -> Unit)
 
     public var IsRunning: Boolean = false
         private set(value) {
@@ -24,7 +24,7 @@ public class Engine : AutoCloseable {
             field = value
         }
 
-    public constructor(window: MainWindow, onFixedUpdateCallback: ((FrameInfo) -> Unit), onUpdateCallback: ((FrameInfo) -> Unit)) {
+    public constructor(window: MainWindow, onFixedUpdateCallback: ((UpdateInfo) -> Unit), onUpdateCallback: ((UpdateInfo) -> Unit)) {
         this.Window = window.also { require(!it.IsClosed) }
         this.OnFixedUpdateCallback = onFixedUpdateCallback
         this.OnUpdateCallback = onUpdateCallback
@@ -38,7 +38,7 @@ public class Engine : AutoCloseable {
     public fun Run(fixedDeltaTime: Double = 1.0 / 20.0) {
         this.IsRunning = true
         this.Fps = 0.0
-        val info = FrameInfo()
+        val info = UpdateInfo()
         while (!this.Window.IsClosingRequested) {
             val deltaTime = run {
                 val startTime = this.Window.Time
@@ -50,7 +50,7 @@ public class Engine : AutoCloseable {
                 endTime - startTime
             }
             this.Fps = 1.0 / deltaTime
-            info.FixedFrameInfo.DeltaTime = fixedDeltaTime
+            info.FixedUpdateInfo.DeltaTime = fixedDeltaTime
             info.Time += deltaTime
             info.DeltaTime = deltaTime
         }
@@ -61,19 +61,19 @@ public class Engine : AutoCloseable {
         GLFW.glfwPollEvents().also { GLFW2.ThrowErrorIfNeeded() }
     }
 
-    private fun OnFixedUpdate(info: FrameInfo) {
-        if (info.FixedFrameInfo.Number == 0) {
+    private fun OnFixedUpdate(info: UpdateInfo) {
+        if (info.FixedUpdateInfo.Number == 0) {
             this.OnFixedUpdateCallback(info)
-            info.FixedFrameInfo.Number++
+            info.FixedUpdateInfo.Number++
         } else {
-            while (info.FixedFrameInfo.Time <= info.Time) {
+            while (info.FixedUpdateInfo.Time <= info.Time) {
                 this.OnFixedUpdateCallback(info)
-                info.FixedFrameInfo.Number++
+                info.FixedUpdateInfo.Number++
             }
         }
     }
 
-    private fun OnUpdate(info: FrameInfo) {
+    private fun OnUpdate(info: UpdateInfo) {
 //        if (GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS || GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
 //            if (GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_ENTER) == GLFW.GLFW_PRESS) {
 //                this.Window.IsFullscreen = !this.Window.IsFullscreen
@@ -89,9 +89,9 @@ public class Engine : AutoCloseable {
 
 }
 
-public class FrameInfo {
+public class UpdateInfo {
 
-    public val FixedFrameInfo: FixedFrameInfo = FixedFrameInfo()
+    public val FixedUpdateInfo: FixedUpdateInfo = FixedUpdateInfo()
 
     public var Number: Int = 0
         internal set
@@ -105,12 +105,12 @@ public class FrameInfo {
     internal constructor()
 
     public override fun toString(): String {
-        return "FrameInfo(Number=${this.Number}, Time=${this.Time})"
+        return "UpdateInfo(Number=${this.Number}, Time=${this.Time})"
     }
 
 }
 
-public class FixedFrameInfo {
+public class FixedUpdateInfo {
 
     public var Number: Int = 0
         internal set
@@ -126,7 +126,7 @@ public class FixedFrameInfo {
     internal constructor()
 
     public override fun toString(): String {
-        return "FixedFrameInfo(Number=${this.Number}, Time=${this.Time})"
+        return "FixedUpdateInfo(Number=${this.Number}, Time=${this.Time})"
     }
 
 }

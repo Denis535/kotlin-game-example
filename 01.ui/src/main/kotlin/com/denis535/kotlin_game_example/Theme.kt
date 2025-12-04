@@ -1,7 +1,6 @@
 package com.denis535.kotlin_game_example
 
 import com.denis535.game_framework_pro.*
-import com.denis535.kotlin_game_example.*
 
 public class Theme : AbstractTheme2<Router, Application> {
 
