@@ -14,7 +14,7 @@ public class Program : AbstractProgram2<Theme, Screen, Router, Application> {
 
     public constructor() {
         this.MainWindow = MainWindow("Kotlin Game Example")
-        this.Engine = Engine(this.MainWindow, this::OnFixedUpdate, this::OnRealUpdate)
+        this.Engine = Engine(this.MainWindow, this::OnFixedUpdate, this::OnUpdate)
         this.Application = Application()
         this.Router = Router()
         this.Screen = Screen()
@@ -38,12 +38,12 @@ public class Program : AbstractProgram2<Theme, Screen, Router, Application> {
         super.OnClose()
     }
 
-    private fun OnFixedUpdate(frame: Frame) {
-        println("FixedFrame: ${frame.FixedFrame.Time} / ${frame.RealFrame.Time}")
+    private fun OnFixedUpdate(info: FrameInfo) {
+        println("FixedFrameInfo: ${info.FixedFrameInfo.Time} / ${info.Time}")
     }
 
-    private fun OnRealUpdate(frame: Frame) {
-        println("RealFrame: ${frame.RealFrame.Time}")
+    private fun OnUpdate(info: FrameInfo) {
+        println("FrameInfo: ${info.Time}")
     }
 
     public override fun GetDependencyInternal(clazz: kotlin.reflect.KClass<*>, argument: Any?): Any? {

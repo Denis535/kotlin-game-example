@@ -5,8 +5,8 @@ import org.lwjgl.glfw.GLFW
 public class Engine : AutoCloseable {
 
     private val Window: MainWindow
-    private val OnFixedUpdateCallback: ((Frame) -> Unit)
-    private val OnRealUpdateCallback: ((Frame) -> Unit)
+    private val OnFixedUpdateCallback: ((FrameInfo) -> Unit)
+    private val OnUpdateCallback: ((FrameInfo) -> Unit)
 
     public var IsRunning: Boolean = false
         private set(value) {
@@ -24,10 +24,10 @@ public class Engine : AutoCloseable {
             field = value
         }
 
-    public constructor(window: MainWindow, onFixedUpdateCallback: ((Frame) -> Unit), onRealUpdateCallback: ((Frame) -> Unit)) {
+    public constructor(window: MainWindow, onFixedUpdateCallback: ((FrameInfo) -> Unit), onUpdateCallback: ((FrameInfo) -> Unit)) {
         this.Window = window.also { require(!it.IsClosed) }
         this.OnFixedUpdateCallback = onFixedUpdateCallback
-        this.OnRealUpdateCallback = onRealUpdateCallback
+        this.OnUpdateCallback = onUpdateCallback
     }
 
     public override fun close() {
@@ -38,21 +38,21 @@ public class Engine : AutoCloseable {
     public fun Run(fixedDeltaTime: Double = 1.0 / 20.0) {
         this.IsRunning = true
         this.Fps = 0.0
-        val frame = Frame()
+        val info = FrameInfo()
         while (!this.Window.IsClosingRequested) {
             val deltaTime = run {
                 val startTime = this.Window.Time
                 this.OnFrameBegin()
-                this.OnFixedUpdate(frame)
-                this.OnRealUpdate(frame)
+                this.OnFixedUpdate(info)
+                this.OnUpdate(info)
                 this.OnFrameEnd()
                 val endTime = this.Window.Time
                 endTime - startTime
             }
             this.Fps = 1.0 / deltaTime
-            frame.FixedFrame.DeltaTime = fixedDeltaTime
-            frame.RealFrame.Time += deltaTime
-            frame.RealFrame.DeltaTime = deltaTime
+            info.FixedFrameInfo.DeltaTime = fixedDeltaTime
+            info.Time += deltaTime
+            info.DeltaTime = deltaTime
         }
         this.IsRunning = false
     }
@@ -61,26 +61,26 @@ public class Engine : AutoCloseable {
         GLFW.glfwPollEvents().also { GLFW2.ThrowErrorIfNeeded() }
     }
 
-    private fun OnFixedUpdate(frame: Frame) {
-        if (frame.FixedFrame.Number == 0) {
-            this.OnFixedUpdateCallback(frame)
-            frame.FixedFrame.Number++
+    private fun OnFixedUpdate(info: FrameInfo) {
+        if (info.FixedFrameInfo.Number == 0) {
+            this.OnFixedUpdateCallback(info)
+            info.FixedFrameInfo.Number++
         } else {
-            while (frame.FixedFrame.Time <= frame.RealFrame.Time) {
-                this.OnFixedUpdateCallback(frame)
-                frame.FixedFrame.Number++
+            while (info.FixedFrameInfo.Time <= info.Time) {
+                this.OnFixedUpdateCallback(info)
+                info.FixedFrameInfo.Number++
             }
         }
     }
 
-    private fun OnRealUpdate(frame: Frame) {
-        if (GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS || GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
-            if (GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_ENTER) == GLFW.GLFW_PRESS) {
-                this.Window.IsFullscreen = !this.Window.IsFullscreen
-            }
-        }
-        this.OnRealUpdateCallback(frame)
-        frame.RealFrame.Number++
+    private fun OnUpdate(info: FrameInfo) {
+//        if (GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS || GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
+//            if (GLFW.glfwGetKey(this.Window.NativeWindowPointer, GLFW.GLFW_KEY_ENTER) == GLFW.GLFW_PRESS) {
+//                this.Window.IsFullscreen = !this.Window.IsFullscreen
+//            }
+//        }
+        this.OnUpdateCallback(info)
+        info.Number++
     }
 
     private fun OnFrameEnd() {
@@ -89,16 +89,28 @@ public class Engine : AutoCloseable {
 
 }
 
-public class Frame {
+public class FrameInfo {
 
-    public val FixedFrame: FixedFrame = FixedFrame()
-    public val RealFrame: RealFrame = RealFrame()
+    public val FixedFrameInfo: FixedFrameInfo = FixedFrameInfo()
+
+    public var Number: Int = 0
+        internal set
+
+    public var Time: Double = 0.0
+        internal set
+
+    public var DeltaTime: Double = 0.0
+        internal set
 
     internal constructor()
 
+    public override fun toString(): String {
+        return "FrameInfo(Number=${this.Number}, Time=${this.Time})"
+    }
+
 }
 
-public class FixedFrame {
+public class FixedFrameInfo {
 
     public var Number: Int = 0
         internal set
@@ -114,26 +126,7 @@ public class FixedFrame {
     internal constructor()
 
     public override fun toString(): String {
-        return "FixedFrame: ${this.Number}, ${this.Time}"
-    }
-
-}
-
-public class RealFrame {
-
-    public var Number: Int = 0
-        internal set
-
-    public var Time: Double = 0.0
-        internal set
-
-    public var DeltaTime: Double = 0.0
-        internal set
-
-    internal constructor()
-
-    public override fun toString(): String {
-        return "RealFrame: ${this.Number}, ${this.Time}"
+        return "FixedFrameInfo(Number=${this.Number}, Time=${this.Time})"
     }
 
 }
