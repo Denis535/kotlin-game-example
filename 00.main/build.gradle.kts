@@ -1,33 +1,40 @@
 plugins {
-    this.id("org.jetbrains.kotlin.jvm") version "2.2.21"
+    this.id("org.jetbrains.kotlin.multiplatform") version "2.3.0-RC2"
     this.id("com.github.ben-manes.versions") version "0.53.0"
 }
 
 kotlin {
-    this.jvmToolchain(24)
-    this.compilerOptions {
-        this.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24
+    this.mingwX64("windows") {
+        this.binaries {
+            this.executable {
+                this.baseName = rootProject.name
+                this.entryPoint = "com.denis535.kotlin_game_example.Main"
+            }
+        }
+    }
+    this.sourceSets {
+        val main by this.creating {
+            this.kotlin.srcDir("src/main/kotlin")
+            this.resources.srcDir("src/main/resources")
+            this.dependencies {
+                this.implementation(this.project(":ui"))
+                this.implementation(this.project(":app"))
+                this.implementation(this.project(":game"))
+                this.implementation(this.project(":common"))
+            }
+        }
+        val windowsMain by getting {
+            this.dependsOn(main)
+        }
     }
 }
 
-dependencies {
-    this.implementation(this.project(":ui"))
-    this.implementation(this.project(":app"))
-    this.implementation(this.project(":game"))
-    this.implementation(this.project(":common"))
-}
-
-tasks.jar {
-    this.archiveBaseName = rootProject.name
-    this.archiveVersion = ""
-    this.archiveClassifier = ""
-    this.manifest {
-        this.attributes["Main-Class"] = "com.denis535.kotlin_game_example.ProgramKt"
-        this.attributes["Class-Path"] = configurations.runtimeClasspath.get().filter { it.name.endsWith(".jar") }.joinToString(" ") { it.name }
-    }
-}
-
-tasks.register("run", JavaExec::class) {
-    this.classpath = sourceSets["main"].runtimeClasspath
-    this.mainClass = "com.denis535.kotlin_game_example.ProgramKt"
-}
+//tasks.register("run") {
+//    this.dependsOn("nativeDebugExecutable")
+//    this.doLast {
+//        val exe = kotlin.targets["native"].binaries.getExecutable("DEBUG").outputFile
+//        exec {
+//            this.commandLine(exe.absolutePath)
+//        }
+//    }
+//}

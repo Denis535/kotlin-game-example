@@ -1,21 +1,20 @@
 plugins {
-    this.id("org.jetbrains.kotlin.jvm") version "2.2.21"
+    this.id("org.jetbrains.kotlin.multiplatform") version "2.3.0-RC2"
     this.id("com.github.ben-manes.versions") version "0.53.0"
 }
 
 kotlin {
-    this.jvmToolchain(24)
-    this.compilerOptions {
-        this.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24
+    this.mingwX64("windows")
+    this.sourceSets {
+        val main by this.creating {
+            this.kotlin.srcDir("src/main/kotlin")
+            this.resources.srcDir("src/main/resources")
+            this.dependencies {
+                this.implementation(this.project(":common"))
+            }
+        }
+        val windowsMain by getting {
+            this.dependsOn(main)
+        }
     }
-}
-
-dependencies {
-    this.implementation(this.project(":common"))
-}
-
-tasks.jar {
-    this.archiveBaseName = rootProject.name + '-' + project.name
-    this.archiveVersion = ""
-    this.archiveClassifier = ""
 }
