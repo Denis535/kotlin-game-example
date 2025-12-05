@@ -5,7 +5,9 @@ import kotlin.reflect.KClass
 import com.denis535.game_framework_pro.*
 
 public fun Main(args: Array<String>) {
-    Program().use {}
+    Program().use {
+        println("Hello World !!!")
+    }
 }
 
 public class Program : AbstractProgram2<Theme, Screen, Router, Application> {

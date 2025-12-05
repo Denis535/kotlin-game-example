@@ -4,7 +4,7 @@ plugins {
 }
 
 kotlin {
-    this.mingwX64("windows")
+    this.mingwX64()
     this.sourceSets {
         val main by this.creating {
             this.kotlin.srcDir("sources")
@@ -14,7 +14,7 @@ kotlin {
                 this.api("io.github.denis535:game-framework-pro-extensions:1.0.1")
             }
         }
-        val windowsMain by getting {
+        val mingwX64Main by getting {
             this.dependsOn(main)
         }
     }

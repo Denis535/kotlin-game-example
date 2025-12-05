@@ -4,7 +4,7 @@ plugins {
 }
 
 kotlin {
-    this.mingwX64("windows")
+    this.mingwX64()
     this.sourceSets {
         val main by this.creating {
             this.kotlin.srcDir("sources")
@@ -15,7 +15,7 @@ kotlin {
                 this.implementation(this.project(":common"))
             }
         }
-        val windowsMain by getting {
+        val mingwX64Main by getting {
             this.dependsOn(main)
         }
     }

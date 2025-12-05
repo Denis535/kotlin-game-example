@@ -1,10 +1,12 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
     this.id("org.jetbrains.kotlin.multiplatform") version "2.3.0-RC2"
     this.id("com.github.ben-manes.versions") version "0.53.0"
 }
 
 kotlin {
-    this.mingwX64("windows") {
+    this.mingwX64 {
         this.binaries {
             this.executable {
                 this.baseName = rootProject.name
@@ -23,18 +25,14 @@ kotlin {
                 this.implementation(this.project(":common"))
             }
         }
-        val windowsMain by getting {
+        val mingwX64Main by getting {
             this.dependsOn(main)
         }
     }
 }
 
-//tasks.register("run") {
-//    this.dependsOn("nativeDebugExecutable")
-//    this.doLast {
-//        val exe = kotlin.targets["native"].binaries.getExecutable("DEBUG").outputFile
-//        exec {
-//            this.commandLine(exe.absolutePath)
-//        }
-//    }
-//}
+tasks.register<Exec>("run") {
+    this.dependsOn("linkDebugExecutableMingwX64")
+    val target = kotlin.targets.getByName("mingwX64") as KotlinNativeTarget
+    this.commandLine(target.binaries.getExecutable("DEBUG").outputFile.absolutePath)
+}
