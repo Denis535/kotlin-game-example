@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFW
 public class Engine : AutoCloseable {
 
     private val Window: MainWindow
-    private val OnFixedUpdateCallback: ((UpdateInfo) -> Unit)
+    private val OnFixedUpdateCallback: ((FixedUpdateInfo) -> Unit)
     private val OnUpdateCallback: ((UpdateInfo) -> Unit)
 
     public var IsRunning: Boolean = false
@@ -24,7 +24,7 @@ public class Engine : AutoCloseable {
             field = value
         }
 
-    public constructor(window: MainWindow, onFixedUpdateCallback: ((UpdateInfo) -> Unit), onUpdateCallback: ((UpdateInfo) -> Unit)) {
+    public constructor(window: MainWindow, onFixedUpdateCallback: ((FixedUpdateInfo) -> Unit), onUpdateCallback: ((UpdateInfo) -> Unit)) {
         this.Window = window.also { require(!it.IsClosed) }
         this.OnFixedUpdateCallback = onFixedUpdateCallback
         this.OnUpdateCallback = onUpdateCallback
@@ -63,11 +63,11 @@ public class Engine : AutoCloseable {
 
     private fun OnFixedUpdate(info: UpdateInfo) {
         if (info.FixedUpdateInfo.Number == 0) {
-            this.OnFixedUpdateCallback(info)
+            this.OnFixedUpdateCallback(info.FixedUpdateInfo)
             info.FixedUpdateInfo.Number++
         } else {
             while (info.FixedUpdateInfo.Time <= info.Time) {
-                this.OnFixedUpdateCallback(info)
+                this.OnFixedUpdateCallback(info.FixedUpdateInfo)
                 info.FixedUpdateInfo.Number++
             }
         }

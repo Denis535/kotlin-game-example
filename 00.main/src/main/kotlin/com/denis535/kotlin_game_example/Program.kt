@@ -40,8 +40,8 @@ public class Program : AbstractProgram2<Theme, Screen, Router, Application> {
         super.OnClose()
     }
 
-    private fun OnFixedUpdate(info: UpdateInfo) {
-        println("OnFixedUpdate: ${info.FixedUpdateInfo.Time} / ${info.Time}")
+    private fun OnFixedUpdate(info: FixedUpdateInfo) {
+        println("OnFixedUpdate: ${info.Time}")
     }
 
     private fun OnUpdate(info: UpdateInfo) {

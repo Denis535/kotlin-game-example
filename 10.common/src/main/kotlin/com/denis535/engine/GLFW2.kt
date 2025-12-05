@@ -1,7 +1,7 @@
 package com.denis535.engine
 
-import org.lwjgl.glfw.GLFW
 import org.lwjgl.system.MemoryUtil
+import org.lwjgl.glfw.GLFW
 
 // Api
 // GLFW
