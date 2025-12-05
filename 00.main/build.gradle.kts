@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
 plugins {
     this.id("org.jetbrains.kotlin.multiplatform") version "2.3.0-RC2"
 }
@@ -32,6 +30,5 @@ kotlin {
 
 tasks.register<Exec>("run") {
     this.dependsOn("linkDebugExecutableMingwX64")
-    val target = kotlin.targets.getByName("mingwX64") as KotlinNativeTarget
-    this.commandLine(target.binaries.getExecutable("DEBUG").outputFile.absolutePath)
+    this.commandLine(layout.buildDirectory.file("bin/mingwX64/debugExecutable/${rootProject.name}.exe").get())
 }
