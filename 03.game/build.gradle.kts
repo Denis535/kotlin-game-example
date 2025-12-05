@@ -5,7 +5,7 @@ plugins {
 kotlin {
     this.mingwX64()
     this.sourceSets {
-        val main by this.creating {
+        val commonMain by this.getting {
             this.kotlin.srcDir("sources")
             this.resources.srcDir("resources")
             this.dependencies {
@@ -13,7 +13,6 @@ kotlin {
             }
         }
         val mingwX64Main by getting {
-            this.dependsOn(main)
         }
     }
 }

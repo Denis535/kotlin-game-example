@@ -12,7 +12,7 @@ kotlin {
         }
     }
     this.sourceSets {
-        val main by this.creating {
+        val commonMain by this.getting {
             this.kotlin.srcDir("sources")
             this.resources.srcDir("resources")
             this.dependencies {
@@ -23,12 +23,6 @@ kotlin {
             }
         }
         val mingwX64Main by getting {
-            this.dependsOn(main)
         }
     }
-}
-
-tasks.register<Exec>("run") {
-    this.dependsOn("linkDebugExecutableMingwX64")
-    this.commandLine(layout.buildDirectory.file("bin/mingwX64/debugExecutable/${rootProject.name}.exe").get())
 }
